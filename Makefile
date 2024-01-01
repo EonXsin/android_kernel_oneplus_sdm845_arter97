@@ -395,11 +395,14 @@ LINUXINCLUDE    := \
 LINUXINCLUDE	+= $(filter-out $(LINUXINCLUDE),$(USERINCLUDE))
 
 KBUILD_AFLAGS   := -D__ASSEMBLY__
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes \
+KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common -fshort-wchar \
+                   -Werror-implicit-function-declaration \
+		   -Wno-format-security \
 		   -std=gnu89
-
+ 
 # Optimization for sdm845
+KBUILD_CFLAGS	+= -mcpu=cortex-a75.cortex-a55+crc+crypto -Wno-attribute-alias -Werror=vla
 
 # This doesn't need 835769/843419 erratum fixes.
 # Some toolchains enable those fixes automatically, so opt-out.
