@@ -33,8 +33,9 @@ jobs:
         sudo apt-get update -y 
         sudo apt install gcc-aarch64-linux-gnu -y
         sudo apt install gcc-arm-linux-gnueabi -y
-        sudo apt install binutils make python3 libssl-dev build-essential bc  bison flex unzip libssl-dev ca-certificates xz-utils mkbootimg cpio device-tree-compiler git git-lfs -y
-        git clone https://github.com/kdrag0n/proton-clang --dept=1 -b master
+        sudo apt install -y curl libisl-dev binutils-aarch64-linux-gnu python2 wget vim git ccache automake flex lzop bison gperf build-essential zip zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler kmod python3 python3-pip
+        git clone https://github.com/arter97/arm32-gcc.git gcc-32 --depth=1
+        git clone https://github.com/arter97/arm64-gcc.git gcc-64 --depth=1
         git clone https://github.com/Coconutat/AnyKernel3_Backup -b Op6_KSU --depth=1
         rm -rf AnyKernel3/.git
     
@@ -47,9 +48,9 @@ jobs:
         rm -rf KernelSU
         rm -rf drivers/kernelsu
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
-        export PATH=$(pwd)/proton-clang/bin/:$PATH
-        make $KERNEL_CMDLINE $KERNEL_DEFCONFIG CC="ccache clang"
-        make $KERNEL_CMDLINE CC="ccache clang" -j$(nproc --all)
+        export PATH=$(pwd)/gcc-64/bin:$(pwd)/gcc-32/bin:$PATH
+        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-none-elf- CROSS_COMPILE_ARM32=arm-none-eabi- sdm845_defconfig
+        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-none-elf- CROSS_COMPILE_ARM32=arm-none-eabi-
         cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3_Backup
     - name: Upload Kernel-SU
       uses: actions/upload-artifact@v3
